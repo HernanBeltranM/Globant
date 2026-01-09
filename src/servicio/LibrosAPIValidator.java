@@ -115,12 +115,25 @@ public class LibrosAPIValidator {
         }
         
         try {
-            int startIndex = apiResponse.indexOf("\"description\":\"") + 15;
+            int startIndex = apiResponse.indexOf("\"description\":\"");
+            if (startIndex == -1) {
+                return "Resumen no disponible";
+            }
+            
+            startIndex += 15;
+            if (startIndex >= apiResponse.length()) {
+                return "Resumen no disponible";
+            }
+            
             int endIndex = apiResponse.indexOf("\"", startIndex);
             
             // Handle escaped quotes
-            while (endIndex > 0 && apiResponse.charAt(endIndex - 1) == '\\') {
+            while (endIndex > 0 && endIndex - 1 >= 0 && apiResponse.charAt(endIndex - 1) == '\\') {
                 endIndex = apiResponse.indexOf("\"", endIndex + 1);
+            }
+            
+            if (endIndex == -1 || endIndex <= startIndex) {
+                return "Resumen no disponible";
             }
             
             String description = apiResponse.substring(startIndex, endIndex);
@@ -153,16 +166,30 @@ public class LibrosAPIValidator {
         try {
             // Try to find the "infoLink" which is the Google Books page
             if (apiResponse.contains("\"infoLink\"")) {
-                int startIndex = apiResponse.indexOf("\"infoLink\":\"") + 12;
-                int endIndex = apiResponse.indexOf("\"", startIndex);
-                return apiResponse.substring(startIndex, endIndex).replace("\\", "");
+                int startIndex = apiResponse.indexOf("\"infoLink\":\"");
+                if (startIndex != -1) {
+                    startIndex += 12;
+                    if (startIndex < apiResponse.length()) {
+                        int endIndex = apiResponse.indexOf("\"", startIndex);
+                        if (endIndex != -1 && endIndex > startIndex) {
+                            return apiResponse.substring(startIndex, endIndex).replace("\\", "");
+                        }
+                    }
+                }
             }
             
             // Try to find the "canonicalVolumeLink"
             if (apiResponse.contains("\"canonicalVolumeLink\"")) {
-                int startIndex = apiResponse.indexOf("\"canonicalVolumeLink\":\"") + 23;
-                int endIndex = apiResponse.indexOf("\"", startIndex);
-                return apiResponse.substring(startIndex, endIndex).replace("\\", "");
+                int startIndex = apiResponse.indexOf("\"canonicalVolumeLink\":\"");
+                if (startIndex != -1) {
+                    startIndex += 23;
+                    if (startIndex < apiResponse.length()) {
+                        int endIndex = apiResponse.indexOf("\"", startIndex);
+                        if (endIndex != -1 && endIndex > startIndex) {
+                            return apiResponse.substring(startIndex, endIndex).replace("\\", "");
+                        }
+                    }
+                }
             }
             
             return null;
@@ -182,8 +209,12 @@ public class LibrosAPIValidator {
         }
         
         // Check if there's a PDF download available or full viewability
-        boolean hasPdfDownload = apiResponse.contains("\"pdf\":{\"isAvailable\":true");
-        boolean isFullView = apiResponse.contains("\"viewability\":\"ALL_PAGES\"");
+        // Handle both "pdf":{"isAvailable":true and "pdf": {"isAvailable": true
+        boolean hasPdfDownload = apiResponse.contains("\"pdf\"") && 
+                                 (apiResponse.contains("\"isAvailable\":true") || 
+                                  apiResponse.contains("\"isAvailable\": true"));
+        boolean isFullView = apiResponse.contains("\"viewability\":\"ALL_PAGES\"") ||
+                            apiResponse.contains("\"viewability\": \"ALL_PAGES\"");
         
         return hasPdfDownload || isFullView;
     }
