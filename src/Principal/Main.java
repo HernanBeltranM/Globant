@@ -6,65 +6,263 @@ import modelo.Prestamo;
 import servicio.UsuarioService;
 import servicio.BibliotecaService;
 import servicio.PrestamoService;
+import servicio.AuthService;
+
+import java.util.Scanner;
 
 public class Main {
+    
+    private static Scanner scanner = new Scanner(System.in);
+    private static AuthService authService = new AuthService();
+    private static UsuarioService usuarioService = new UsuarioService();
+    private static BibliotecaService bibliotecaService = new BibliotecaService();
+    private static PrestamoService prestamoService = new PrestamoService();
+    private static Usuario usuarioActual = null;
+    
     public static void main(String[] args) {
         System.out.println("=== Sistema de Biblioteca con Supabase ===\n");
         
-        UsuarioService usuarioService = new UsuarioService();
-        BibliotecaService bibliotecaService = new BibliotecaService();
-        PrestamoService prestamoService = new PrestamoService();
+        // Main loop
+        while (true) {
+            if (usuarioActual == null) {
+                mostrarMenuLogin();
+            } else {
+                mostrarMenuPrincipal();
+            }
+        }
+    }
+    
+    private static void mostrarMenuLogin() {
+        System.out.println("\n=== MENÚ DE LOGIN ===");
+        System.out.println("1. Iniciar Sesión");
+        System.out.println("2. Salir");
+        System.out.print("Seleccione una opción: ");
+        
+        String opcion = scanner.nextLine();
+        
+        switch (opcion) {
+            case "1":
+                iniciarSesion();
+                break;
+            case "2":
+                System.out.println("¡Hasta luego!");
+                System.exit(0);
+                break;
+            default:
+                System.out.println("Opción no válida.");
+        }
+    }
+    
+    private static void iniciarSesion() {
+        System.out.print("\nCorreo electrónico: ");
+        String correo = scanner.nextLine();
+        System.out.print("Contraseña: ");
+        String contrasena = scanner.nextLine();
         
         try {
-            // Ejemplo 1: Registrar un usuario
-            System.out.println("1. Registrando un usuario...");
-            Usuario usuario = new Usuario("usuario@ejemplo.com", "password123", "usuario");
-            usuarioService.registrarUsuario(usuario);
-            System.out.println();
-            
-            // Ejemplo 2: Agregar un libro con validación de API
-            System.out.println("2. Agregando un libro (ISBN válido)...");
-            Libro libro = new Libro("9780747532699", "Harry Potter y la Piedra Filosofal", "J.K. Rowling", "disponible");
-            bibliotecaService.agregarLibro(libro);
-            System.out.println();
-            
-            // Ejemplo 3: Intentar agregar un libro con ISBN inválido
-            System.out.println("3. Intentando agregar un libro con ISBN inválido...");
-            try {
-                Libro libroInvalido = new Libro("000-0-00-000000-0", "Libro Falso", "Autor Falso", "disponible");
-                bibliotecaService.agregarLibro(libroInvalido);
-            } catch (Exception e) {
-                System.out.println("Esperado: " + e.getMessage());
+            usuarioActual = authService.login(correo, contrasena);
+            if (usuarioActual == null) {
+                System.out.println("Login fallido. Por favor, intente de nuevo.");
             }
-            System.out.println();
-            
-            // Ejemplo 4: Listar todos los libros
-            System.out.println("4. Listando todos los libros...");
-            bibliotecaService.listarLibros();
-            System.out.println();
-            
-            // Ejemplo 5: Listar todos los usuarios
-            System.out.println("5. Listando todos los usuarios...");
-            usuarioService.listarUsuarios();
-            System.out.println();
-            
-            // Ejemplo 6: Crear un préstamo
-            System.out.println("6. Creando un préstamo...");
-            Prestamo prestamo = new Prestamo(1, "9780747532699", false);
-            prestamoService.crearPrestamo(prestamo);
-            System.out.println();
-            
-            // Ejemplo 7: Listar préstamos
-            System.out.println("7. Listando todos los préstamos...");
-            prestamoService.listarPrestamos();
-            System.out.println();
-            
         } catch (Exception e) {
-            System.err.println("Error: " + e.getMessage());
-            e.printStackTrace();
+            System.err.println("Error durante el login: " + e.getMessage());
+        }
+    }
+    
+    private static void mostrarMenuPrincipal() {
+        System.out.println("\n=== MENÚ PRINCIPAL ===");
+        System.out.println("Usuario: " + usuarioActual.getCorreo() + " (Rol: " + usuarioActual.getRol() + ")");
+        System.out.println("\n1. Gestión de Usuarios");
+        System.out.println("2. Gestión de Libros");
+        System.out.println("3. Gestión de Préstamos");
+        System.out.println("4. Cerrar Sesión");
+        System.out.print("Seleccione una opción: ");
+        
+        String opcion = scanner.nextLine();
+        
+        switch (opcion) {
+            case "1":
+                menuGestionUsuarios();
+                break;
+            case "2":
+                menuGestionLibros();
+                break;
+            case "3":
+                menuGestionPrestamos();
+                break;
+            case "4":
+                usuarioActual = null;
+                System.out.println("Sesión cerrada.");
+                break;
+            default:
+                System.out.println("Opción no válida.");
+        }
+    }
+    
+    private static void menuGestionUsuarios() {
+        System.out.println("\n=== GESTIÓN DE USUARIOS ===");
+        System.out.println("1. Listar Usuarios");
+        System.out.println("2. Crear Usuario");
+        System.out.println("3. Buscar Usuario por Correo");
+        System.out.println("4. Volver");
+        System.out.print("Seleccione una opción: ");
+        
+        String opcion = scanner.nextLine();
+        
+        switch (opcion) {
+            case "1":
+                listarUsuarios();
+                break;
+            case "2":
+                crearUsuario();
+                break;
+            case "3":
+                buscarUsuarioPorCorreo();
+                break;
+            case "4":
+                return;
+            default:
+                System.out.println("Opción no válida.");
+        }
+    }
+    
+    private static void listarUsuarios() {
+        try {
+            usuarioService.listarUsuarios();
+        } catch (Exception e) {
+            System.err.println("Error al listar usuarios: " + e.getMessage());
+        }
+    }
+    
+    private static void crearUsuario() {
+        System.out.print("\nCorreo del nuevo usuario: ");
+        String correo = scanner.nextLine();
+        System.out.print("Contraseña: ");
+        String contrasena = scanner.nextLine();
+        
+        System.out.println("\nRoles disponibles:");
+        if (usuarioActual.getRol().equalsIgnoreCase("superadmin")) {
+            System.out.println("- superadmin");
+            System.out.println("- admin");
+            System.out.println("- normal");
+        } else if (usuarioActual.getRol().equalsIgnoreCase("admin")) {
+            System.out.println("- normal");
+        } else {
+            System.out.println("No tienes permisos para crear usuarios.");
+            return;
         }
         
-        System.out.println("\n=== Fin del programa ===");
+        System.out.print("Rol del nuevo usuario: ");
+        String rol = scanner.nextLine();
+        
+        try {
+            authService.crearUsuario(usuarioActual, correo, contrasena, rol);
+        } catch (Exception e) {
+            System.err.println("Error al crear usuario: " + e.getMessage());
+        }
+    }
+    
+    private static void buscarUsuarioPorCorreo() {
+        System.out.print("\nCorreo del usuario: ");
+        String correo = scanner.nextLine();
+        
+        try {
+            usuarioService.buscarUsuarioPorCorreo(correo);
+        } catch (Exception e) {
+            System.err.println("Error al buscar usuario: " + e.getMessage());
+        }
+    }
+    
+    private static void menuGestionLibros() {
+        System.out.println("\n=== GESTIÓN DE LIBROS ===");
+        System.out.println("1. Listar Libros");
+        System.out.println("2. Agregar Libro");
+        System.out.println("3. Volver");
+        System.out.print("Seleccione una opción: ");
+        
+        String opcion = scanner.nextLine();
+        
+        switch (opcion) {
+            case "1":
+                listarLibros();
+                break;
+            case "2":
+                agregarLibro();
+                break;
+            case "3":
+                return;
+            default:
+                System.out.println("Opción no válida.");
+        }
+    }
+    
+    private static void listarLibros() {
+        try {
+            bibliotecaService.listarLibros();
+        } catch (Exception e) {
+            System.err.println("Error al listar libros: " + e.getMessage());
+        }
+    }
+    
+    private static void agregarLibro() {
+        System.out.print("\nISBN: ");
+        String isbn = scanner.nextLine();
+        System.out.print("Título: ");
+        String titulo = scanner.nextLine();
+        System.out.print("Autor: ");
+        String autor = scanner.nextLine();
+        
+        try {
+            Libro libro = new Libro(isbn, titulo, autor, "disponible");
+            bibliotecaService.agregarLibro(libro);
+        } catch (Exception e) {
+            System.err.println("Error al agregar libro: " + e.getMessage());
+        }
+    }
+    
+    private static void menuGestionPrestamos() {
+        System.out.println("\n=== GESTIÓN DE PRÉSTAMOS ===");
+        System.out.println("1. Listar Préstamos");
+        System.out.println("2. Crear Préstamo");
+        System.out.println("3. Volver");
+        System.out.print("Seleccione una opción: ");
+        
+        String opcion = scanner.nextLine();
+        
+        switch (opcion) {
+            case "1":
+                listarPrestamos();
+                break;
+            case "2":
+                crearPrestamo();
+                break;
+            case "3":
+                return;
+            default:
+                System.out.println("Opción no válida.");
+        }
+    }
+    
+    private static void listarPrestamos() {
+        try {
+            prestamoService.listarPrestamos();
+        } catch (Exception e) {
+            System.err.println("Error al listar préstamos: " + e.getMessage());
+        }
+    }
+    
+    private static void crearPrestamo() {
+        System.out.print("\nID de Usuario: ");
+        int usuarioId = Integer.parseInt(scanner.nextLine());
+        System.out.print("ISBN del Libro: ");
+        String isbn = scanner.nextLine();
+        
+        try {
+            Prestamo prestamo = new Prestamo(usuarioId, isbn, false);
+            prestamoService.crearPrestamo(prestamo);
+        } catch (Exception e) {
+            System.err.println("Error al crear préstamo: " + e.getMessage());
+        }
     }
 }
 
