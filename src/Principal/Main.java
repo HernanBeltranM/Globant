@@ -252,14 +252,16 @@ public class Main {
     }
     
     private static void crearPrestamo() {
-        System.out.print("\nID de Usuario: ");
-        int usuarioId = Integer.parseInt(scanner.nextLine());
-        System.out.print("ISBN del Libro: ");
-        String isbn = scanner.nextLine();
-        
         try {
+            System.out.print("\nID de Usuario: ");
+            int usuarioId = Integer.parseInt(scanner.nextLine());
+            System.out.print("ISBN del Libro: ");
+            String isbn = scanner.nextLine();
+            
             Prestamo prestamo = new Prestamo(usuarioId, isbn, false);
             prestamoService.crearPrestamo(prestamo);
+        } catch (NumberFormatException e) {
+            System.err.println("Error: El ID de usuario debe ser un número válido.");
         } catch (Exception e) {
             System.err.println("Error al crear préstamo: " + e.getMessage());
         }
