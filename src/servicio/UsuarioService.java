@@ -5,10 +5,13 @@ import modelo.Usuario;
 public class UsuarioService {
     
     public void registrarUsuario(Usuario usuario) throws Exception {
+        // Hash the password before storing
+        String hashedPassword = PasswordHasher.hashPassword(usuario.getContrasena());
+        
         String json = String.format(
             "{\"correo\":\"%s\",\"contrasena\":\"%s\",\"rol\":\"%s\"%s}",
             usuario.getCorreo(), 
-            usuario.getContrasena(), 
+            hashedPassword, 
             usuario.getRol(),
             usuario.getOath() != null ? ",\"oath\":\"" + usuario.getOath() + "\"" : ""
         );
