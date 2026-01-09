@@ -5,6 +5,14 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
 
+/**
+ * Password hashing utility using SHA-256 with salt.
+ * 
+ * NOTE: For production systems, consider using dedicated password hashing algorithms
+ * like bcrypt, scrypt, or Argon2, which are designed to be computationally expensive
+ * and resistant to brute force attacks. This implementation uses SHA-256 which is
+ * faster but less secure for password hashing purposes.
+ */
 public class PasswordHasher {
     
     private static final String ALGORITHM = "SHA-256";

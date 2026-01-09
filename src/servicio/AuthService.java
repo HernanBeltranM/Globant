@@ -61,7 +61,9 @@ public class AuthService {
     }
     
     /**
-     * Simple JSON value extractor
+     * Simple JSON value extractor using regex.
+     * Note: This is a simple implementation for basic JSON responses.
+     * For complex JSON structures, consider using a proper JSON library like Jackson or Gson.
      */
     private String extractJsonValue(String json, String key) {
         Pattern pattern = Pattern.compile("\"" + key + "\"\\s*:\\s*\"?([^\",}]*)\"?");
