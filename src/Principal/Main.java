@@ -22,30 +22,40 @@ public class Main {
             usuarioService.registrarUsuario(usuario);
             System.out.println();
             
-            // Ejemplo 2: Agregar un libro
-            System.out.println("2. Agregando un libro...");
-            Libro libro = new Libro("978-3-16-148410-0", "El Quijote", "Miguel de Cervantes", "disponible");
+            // Ejemplo 2: Agregar un libro con validación de API
+            System.out.println("2. Agregando un libro (ISBN válido)...");
+            Libro libro = new Libro("9780747532699", "Harry Potter y la Piedra Filosofal", "J.K. Rowling", "disponible");
             bibliotecaService.agregarLibro(libro);
             System.out.println();
             
-            // Ejemplo 3: Listar todos los libros
-            System.out.println("3. Listando todos los libros...");
+            // Ejemplo 3: Intentar agregar un libro con ISBN inválido
+            System.out.println("3. Intentando agregar un libro con ISBN inválido...");
+            try {
+                Libro libroInvalido = new Libro("000-0-00-000000-0", "Libro Falso", "Autor Falso", "disponible");
+                bibliotecaService.agregarLibro(libroInvalido);
+            } catch (Exception e) {
+                System.out.println("Esperado: " + e.getMessage());
+            }
+            System.out.println();
+            
+            // Ejemplo 4: Listar todos los libros
+            System.out.println("4. Listando todos los libros...");
             bibliotecaService.listarLibros();
             System.out.println();
             
-            // Ejemplo 4: Listar todos los usuarios
-            System.out.println("4. Listando todos los usuarios...");
+            // Ejemplo 5: Listar todos los usuarios
+            System.out.println("5. Listando todos los usuarios...");
             usuarioService.listarUsuarios();
             System.out.println();
             
-            // Ejemplo 5: Crear un préstamo
-            System.out.println("5. Creando un préstamo...");
-            Prestamo prestamo = new Prestamo(1, "978-3-16-148410-0", false);
+            // Ejemplo 6: Crear un préstamo
+            System.out.println("6. Creando un préstamo...");
+            Prestamo prestamo = new Prestamo(1, "9780747532699", false);
             prestamoService.crearPrestamo(prestamo);
             System.out.println();
             
-            // Ejemplo 6: Listar préstamos
-            System.out.println("6. Listando todos los préstamos...");
+            // Ejemplo 7: Listar préstamos
+            System.out.println("7. Listando todos los préstamos...");
             prestamoService.listarPrestamos();
             System.out.println();
             
