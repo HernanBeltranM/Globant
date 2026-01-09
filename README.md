@@ -2,6 +2,31 @@
 
 Este proyecto integra un sistema de biblioteca Java con Supabase como backend.
 
+## Configuración en IntelliJ IDEA
+
+Este proyecto está desarrollado en **IntelliJ IDEA**.
+
+### Cómo ejecutar el proyecto en IntelliJ:
+
+1. **Abrir el proyecto:**
+   - File → Open → Seleccionar la carpeta `/Globant`
+   - IntelliJ detectará automáticamente el archivo `Globant.iml`
+
+2. **Configurar JDK:**
+   - File → Project Structure → Project
+   - Asegurarse de tener JDK 8 o superior configurado
+
+3. **Ejecutar el programa:**
+   - Abrir `src/Principal/Main.java`
+   - Click derecho en la clase `Main`
+   - Seleccionar "Run 'Main.main()'"
+   - O usar el atajo: Shift + F10
+
+4. **Ver la salida:**
+   - Los resultados se mostrarán en la consola de IntelliJ (Run window)
+
+### Estructura del Proyecto en IntelliJ
+
 ## Validación de Libros
 
 ### API Externa de Libros
@@ -81,12 +106,21 @@ bibliotecaService.agregarLibro(libroInvalido); // ✗ Error: Libro no encontrado
 
 ## Compilar y Ejecutar
 
-### Compilar
+### En IntelliJ IDEA (Recomendado)
+
+1. Abrir el proyecto en IntelliJ
+2. Navegar a `src/Principal/Main.java`
+3. Click derecho → "Run 'Main.main()'"
+4. Ver resultados en la consola de IntelliJ
+
+### Desde línea de comandos
+
+#### Compilar
 ```bash
 javac -d out src/modelo/*.java src/servicio/*.java src/Principal/*.java
 ```
 
-### Ejecutar
+#### Ejecutar
 ```bash
 java -cp out Principal.Main
 ```
