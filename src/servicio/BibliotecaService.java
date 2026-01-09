@@ -5,12 +5,23 @@ import modelo.Libro;
 public class BibliotecaService {
     
     public void agregarLibro(Libro libro) throws Exception {
+        // Validar que el libro exista en la API de libros antes de guardarlo
+        System.out.println("Validando libro en API externa...");
+        boolean existe = LibrosAPIValidator.libroExiste(libro.getIsbn());
+        
+        if (!existe) {
+            System.out.println("ERROR: El libro con ISBN " + libro.getIsbn() + " no existe en la API de libros.");
+            System.out.println("El libro NO será guardado en Supabase.");
+            throw new Exception("Libro no encontrado en la API de libros. No se puede agregar.");
+        }
+        
+        System.out.println("✓ Libro validado correctamente en la API.");
         String json = String.format(
             "{\"isbn\":\"%s\",\"titulo\":\"%s\",\"autor\":\"%s\",\"estado\":\"%s\"}",
             libro.getIsbn(), libro.getTitulo(), libro.getAutor(), libro.getEstado()
         );
         String response = SupabaseClient.post(SupabaseConfig.LIBROS_URL, json);
-        System.out.println("Libro agregado: " + response);
+        System.out.println("Libro agregado a Supabase: " + response);
     }
     
     public void listarLibros() throws Exception {

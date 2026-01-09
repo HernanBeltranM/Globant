@@ -2,6 +2,34 @@
 
 Este proyecto integra un sistema de biblioteca Java con Supabase como backend.
 
+## Validación de Libros
+
+### API Externa de Libros
+
+El sistema valida que los libros existan en una API externa antes de guardarlos en Supabase. Se utiliza la **Google Books API** para verificar la existencia de libros por ISBN.
+
+**Importante:** Solo se guardarán libros que existan en la API de libros. Si el ISBN no se encuentra en la API, el libro NO será guardado en Supabase.
+
+### Flujo de Validación
+
+1. Cuando se intenta agregar un libro, el sistema primero consulta la Google Books API
+2. Si el libro existe (totalItems > 0), se guarda en Supabase
+3. Si el libro NO existe, se muestra un error y NO se guarda
+
+### Ejemplo de Uso
+
+```java
+BibliotecaService bibliotecaService = new BibliotecaService();
+
+// ISBN válido - Se guardará en Supabase
+Libro libroValido = new Libro("9780747532699", "Harry Potter", "J.K. Rowling", "disponible");
+bibliotecaService.agregarLibro(libroValido); // ✓ Se guarda
+
+// ISBN inválido - NO se guardará en Supabase
+Libro libroInvalido = new Libro("000-0-00-000000-0", "Libro Falso", "Autor Falso", "disponible");
+bibliotecaService.agregarLibro(libroInvalido); // ✗ Error: Libro no encontrado en la API
+```
+
 ## Estructura del Proyecto
 
 ### Modelos (src/modelo/)
@@ -12,8 +40,9 @@ Este proyecto integra un sistema de biblioteca Java con Supabase como backend.
 ### Servicios (src/servicio/)
 - **SupabaseConfig.java**: Configuración de URLs y API key de Supabase
 - **SupabaseClient.java**: Cliente HTTP para realizar peticiones GET, POST, PATCH, DELETE a Supabase
+- **LibrosAPIValidator.java**: Validador que consulta Google Books API para verificar existencia de libros por ISBN
 - **UsuarioService.java**: Servicio para gestionar usuarios (registrar, listar, buscar, actualizar rol)
-- **BibliotecaService.java**: Servicio para gestionar libros (agregar, listar, buscar, actualizar estado)
+- **BibliotecaService.java**: Servicio para gestionar libros (agregar con validación, listar, buscar, actualizar estado)
 - **PrestamoService.java**: Servicio para gestionar préstamos (crear, listar, aprobar, buscar por usuario)
 
 ## Tablas en Supabase
@@ -71,11 +100,11 @@ Usuario usuario = new Usuario("correo@ejemplo.com", "password123", "usuario");
 usuarioService.registrarUsuario(usuario);
 ```
 
-### Agregar Libro
+### Agregar Libro (con validación)
 ```java
 BibliotecaService bibliotecaService = new BibliotecaService();
-Libro libro = new Libro("978-3-16-148410-0", "Título", "Autor", "disponible");
-bibliotecaService.agregarLibro(libro);
+Libro libro = new Libro("9780747532699", "Harry Potter", "J.K. Rowling", "disponible");
+bibliotecaService.agregarLibro(libro); // Solo se guarda si existe en Google Books API
 ```
 
 ### Crear Préstamo
