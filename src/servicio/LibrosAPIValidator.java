@@ -128,7 +128,7 @@ public class LibrosAPIValidator {
             int endIndex = apiResponse.indexOf("\"", startIndex);
             
             // Handle escaped quotes
-            while (endIndex > 0 && endIndex - 1 >= 0 && apiResponse.charAt(endIndex - 1) == '\\') {
+            while (endIndex > 0 && apiResponse.charAt(endIndex - 1) == '\\') {
                 endIndex = apiResponse.indexOf("\"", endIndex + 1);
             }
             
@@ -282,21 +282,29 @@ public class LibrosAPIValidator {
             int startIndex = json.indexOf("\"" + field + "\":");
             if (startIndex == -1) return null;
             
-            startIndex = json.indexOf(":", startIndex) + 1;
+            startIndex = json.indexOf(":", startIndex);
+            if (startIndex == -1) return null;
+            startIndex++;
             
             // Skip whitespace
             while (startIndex < json.length() && Character.isWhitespace(json.charAt(startIndex))) {
                 startIndex++;
             }
             
+            if (startIndex >= json.length()) return null;
+            
             if (json.charAt(startIndex) == '"') {
                 startIndex++;
                 int endIndex = json.indexOf("\"", startIndex);
+                if (endIndex == -1 || endIndex <= startIndex) return null;
                 return json.substring(startIndex, endIndex);
             } else if (json.charAt(startIndex) == '[') {
                 // It's an array, extract first element
-                startIndex = json.indexOf("\"", startIndex) + 1;
+                int firstQuote = json.indexOf("\"", startIndex);
+                if (firstQuote == -1) return null;
+                startIndex = firstQuote + 1;
                 int endIndex = json.indexOf("\"", startIndex);
+                if (endIndex == -1 || endIndex <= startIndex) return null;
                 return json.substring(startIndex, endIndex);
             }
             
