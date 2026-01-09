@@ -2,7 +2,6 @@ package servicio;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.nio.charset.StandardCharsets;
 
 public class PasswordHasher {
     
@@ -14,7 +13,7 @@ public class PasswordHasher {
     public static String hashPassword(String password) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+            byte[] hash = digest.digest(password.getBytes());
             StringBuilder hexString = new StringBuilder();
             
             for (byte b : hash) {
