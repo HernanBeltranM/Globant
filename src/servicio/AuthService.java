@@ -1,6 +1,8 @@
 package servicio;
 
 import modelo.Usuario;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 public class AuthService {
     
@@ -12,8 +14,11 @@ public class AuthService {
      */
     public Usuario autenticar(String correo, String contrasena) {
         try {
+            // URL encode the email to prevent issues with special characters
+            String encodedEmail = URLEncoder.encode(correo, StandardCharsets.UTF_8.toString());
+            
             // Search for user by email
-            String url = SupabaseConfig.USUARIOS_URL + "?correo=eq." + correo;
+            String url = SupabaseConfig.USUARIOS_URL + "?correo=eq." + encodedEmail;
             String response = SupabaseClient.get(url);
             
             // Check if response is empty array
@@ -82,10 +87,17 @@ public class AuthService {
                 startIndex++;
             }
             
+            if (startIndex >= json.length()) {
+                return null;
+            }
+            
             // Check if value is a string (starts with ")
             if (json.charAt(startIndex) == '"') {
                 startIndex++; // Skip opening quote
                 int endIndex = json.indexOf("\"", startIndex);
+                if (endIndex == -1) {
+                    return null;
+                }
                 return json.substring(startIndex, endIndex);
             } else if (json.charAt(startIndex) == 'n' && json.startsWith("null", startIndex)) {
                 return null;
