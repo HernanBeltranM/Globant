@@ -16,6 +16,13 @@ public class UsuarioService {
         System.out.println("Usuario registrado: " + response);
     }
     
+    public void registrarUsuarioConHash(String correo, String contrasena, String rol) throws Exception {
+        // Hash password before storing
+        String hashedPassword = PasswordHasher.hashPassword(contrasena);
+        Usuario usuario = new Usuario(correo, hashedPassword, rol);
+        registrarUsuario(usuario);
+    }
+    
     public void listarUsuarios() throws Exception {
         String response = SupabaseClient.get(SupabaseConfig.USUARIOS_URL);
         System.out.println("Usuarios: " + response);
