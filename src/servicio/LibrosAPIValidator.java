@@ -11,6 +11,7 @@ public class LibrosAPIValidator {
     
     // Google Books API para validar libros por ISBN
     private static final String GOOGLE_BOOKS_API = "https://www.googleapis.com/books/v1/volumes?q=isbn:";
+    private static final String API_KEY = "AIzaSyCcW8aoNU4ikuYUtq7_wyc3HGIpbFnCs8M";
     
     /**
      * Valida si un libro existe en la API de Google Books usando su ISBN
@@ -20,7 +21,7 @@ public class LibrosAPIValidator {
     public static boolean libroExiste(String isbn) {
         try {
             String cleanIsbn = isbn.replaceAll("[^0-9X]", "");
-            String urlString = GOOGLE_BOOKS_API + URLEncoder.encode(cleanIsbn, StandardCharsets.UTF_8.toString());
+            String urlString = GOOGLE_BOOKS_API + URLEncoder.encode(cleanIsbn, StandardCharsets.UTF_8.toString()) + "&key=" + API_KEY;
             
             URL url = new URL(urlString);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -73,7 +74,7 @@ public class LibrosAPIValidator {
     public static String obtenerInfoLibro(String isbn) {
         try {
             String cleanIsbn = isbn.replaceAll("[^0-9X]", "");
-            String urlString = GOOGLE_BOOKS_API + URLEncoder.encode(cleanIsbn, StandardCharsets.UTF_8.toString());
+            String urlString = GOOGLE_BOOKS_API + URLEncoder.encode(cleanIsbn, StandardCharsets.UTF_8.toString()) + "&key=" + API_KEY;
             
             URL url = new URL(urlString);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
