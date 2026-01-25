@@ -207,13 +207,10 @@ public class Main {
     private static void agregarLibro() {
         System.out.print("\nISBN: ");
         String isbn = scanner.nextLine();
-        System.out.print("Título: ");
-        String titulo = scanner.nextLine();
-        System.out.print("Autor: ");
-        String autor = scanner.nextLine();
         
         try {
-            Libro libro = new Libro(isbn, titulo, autor, "disponible");
+            // Solo se necesita el ISBN, el resto se obtiene de la API
+            Libro libro = new Libro(isbn, "", "", "disponible");
             bibliotecaService.agregarLibro(libro);
         } catch (Exception e) {
             System.err.println("Error al agregar libro: " + e.getMessage());
