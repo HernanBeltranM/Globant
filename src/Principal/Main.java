@@ -187,7 +187,30 @@ public class Main {
                 listarLibros();
                 break;
             case "2":
-                agregarLibro();
+                menuAgregarLibro();
+                break;
+            case "3":
+                return;
+            default:
+                System.out.println("Opción no válida.");
+        }
+    }
+    
+    private static void menuAgregarLibro() {
+        System.out.println("\n=== AGREGAR LIBRO ===");
+        System.out.println("1. Auto-completar desde API (solo ISBN)");
+        System.out.println("2. Entrada manual (ISBN, título y autor)");
+        System.out.println("3. Volver");
+        System.out.print("Seleccione una opción: ");
+        
+        String opcion = scanner.nextLine();
+        
+        switch (opcion) {
+            case "1":
+                agregarLibroAutoAPI();
+                break;
+            case "2":
+                agregarLibroManual();
                 break;
             case "3":
                 return;
@@ -204,14 +227,30 @@ public class Main {
         }
     }
     
-    private static void agregarLibro() {
+    private static void agregarLibroAutoAPI() {
         System.out.print("\nISBN: ");
         String isbn = scanner.nextLine();
         
         try {
             // Solo se necesita el ISBN, el resto se obtiene de la API
             Libro libro = new Libro(isbn, "", "", "disponible");
-            bibliotecaService.agregarLibro(libro);
+            bibliotecaService.agregarLibroAutoAPI(libro);
+        } catch (Exception e) {
+            System.err.println("Error al agregar libro: " + e.getMessage());
+        }
+    }
+    
+    private static void agregarLibroManual() {
+        System.out.print("\nISBN: ");
+        String isbn = scanner.nextLine();
+        System.out.print("Título: ");
+        String titulo = scanner.nextLine();
+        System.out.print("Autor: ");
+        String autor = scanner.nextLine();
+        
+        try {
+            Libro libro = new Libro(isbn, titulo, autor, "disponible");
+            bibliotecaService.agregarLibroManual(libro);
         } catch (Exception e) {
             System.err.println("Error al agregar libro: " + e.getMessage());
         }
