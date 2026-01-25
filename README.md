@@ -35,25 +35,66 @@ El sistema valida que los libros existan en una API externa antes de guardarlos 
 
 **Importante:** Solo se guardarán libros que existan en la API de libros. Si el ISBN no se encuentra en la API, el libro NO será guardado en Supabase.
 
-### Flujo de Validación
+### Auto-completado de Información
 
-1. Cuando se intenta agregar un libro, el sistema primero consulta la Google Books API
-2. Si el libro existe (totalItems > 0), se guarda en Supabase
-3. Si el libro NO existe, se muestra un error y NO se guarda
+**¡NUEVO!** Ahora solo necesitas proporcionar el **ISBN** del libro. El sistema automáticamente:
+- Busca el libro en Google Books API
+- Extrae el título y los autores
+- Guarda la información completa en Supabase
+
+### Flujo de Validación y Auto-completado
+
+1. El usuario solo proporciona el **ISBN**
+2. El sistema consulta la Google Books API con ese ISBN
+3. Si el libro existe (totalItems > 0):
+   - Se extrae automáticamente el título
+   - Se extraen automáticamente los autores
+   - Se guarda en Supabase con toda la información
+4. Si el libro NO existe, se muestra un error y NO se guarda
 
 ### Ejemplo de Uso
 
+**Interfaz de Usuario (Terminal):**
+```
+=== GESTIÓN DE LIBROS ===
+1. Listar Libros
+2. Agregar Libro
+3. Volver
+Seleccione una opción: 2
+
+ISBN: 9788420412146
+Buscando libro en Google Books API...
+✓ Libro encontrado en la API:
+  - Título: Don Quijote de la Mancha. Edición RAE / Don Quixote de la Mancha. RAE
+  - Autor(es): Miguel de Cervantes
+Libro agregado a Supabase exitosamente.
+```
+
+**Código programático:**
 ```java
 BibliotecaService bibliotecaService = new BibliotecaService();
 
-// ISBN válido - Se guardará en Supabase
-Libro libroValido = new Libro("9780747532699", "Harry Potter", "J.K. Rowling", "disponible");
-bibliotecaService.agregarLibro(libroValido); // ✓ Se guarda
+// Solo necesitas el ISBN - el título y autor se obtienen automáticamente de la API
+Libro libro = new Libro("9788420412146", "", "", "disponible");
+bibliotecaService.agregarLibro(libro); 
+// ✓ Se obtiene: Título: "Don Quijote de la Mancha...", Autor: "Miguel de Cervantes"
 
 // ISBN inválido - NO se guardará en Supabase
-Libro libroInvalido = new Libro("000-0-00-000000-0", "Libro Falso", "Autor Falso", "disponible");
+Libro libroInvalido = new Libro("000-0-00-000000-0", "", "", "disponible");
 bibliotecaService.agregarLibro(libroInvalido); // ✗ Error: Libro no encontrado en la API
 ```
+
+### Ejemplo de API Response
+
+El sistema utiliza la Google Books API con el siguiente formato:
+```
+https://www.googleapis.com/books/v1/volumes?q=isbn:9788420412146&key=API_KEY
+```
+
+De la respuesta JSON, el sistema extrae:
+- `volumeInfo.title` → Título del libro
+- `volumeInfo.authors` → Lista de autores (se concatenan con comas)
+
 
 ## Estructura del Proyecto
 
@@ -134,11 +175,15 @@ Usuario usuario = new Usuario("correo@ejemplo.com", "password123", "usuario");
 usuarioService.registrarUsuario(usuario);
 ```
 
-### Agregar Libro (con validación)
+### Agregar Libro (con auto-completado desde API)
 ```java
 BibliotecaService bibliotecaService = new BibliotecaService();
-Libro libro = new Libro("9780747532699", "Harry Potter", "J.K. Rowling", "disponible");
-bibliotecaService.agregarLibro(libro); // Solo se guarda si existe en Google Books API
+
+// ¡NUEVO! Solo necesitas el ISBN, el título y autor se obtienen automáticamente
+Libro libro = new Libro("9788420412146", "", "", "disponible");
+bibliotecaService.agregarLibro(libro); 
+// Sistema consulta API → Obtiene: "Don Quijote de la Mancha..." y "Miguel de Cervantes"
+// Guarda en Supabase con toda la información completa
 ```
 
 ### Crear Préstamo
