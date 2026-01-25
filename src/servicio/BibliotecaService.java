@@ -23,7 +23,14 @@ public class BibliotecaService {
         System.out.println("Buscando libro en Google Books API...");
         String infoLibro = LibrosAPIValidator.obtenerInfoLibro(libro.getIsbn());
         
-        if (infoLibro == null || !LibrosAPIValidator.libroExiste(libro.getIsbn())) {
+        if (infoLibro == null) {
+            System.out.println("ERROR: El libro con ISBN " + libro.getIsbn() + " no existe en la API de libros.");
+            System.out.println("El libro NO será guardado en Supabase.");
+            throw new Exception("Libro no encontrado en la API de libros. No se puede agregar.");
+        }
+        
+        // Verificar que tenga resultados (totalItems > 0)
+        if (!infoLibro.contains("\"totalItems\":") || !LibrosAPIValidator.tieneResultados(infoLibro)) {
             System.out.println("ERROR: El libro con ISBN " + libro.getIsbn() + " no existe en la API de libros.");
             System.out.println("El libro NO será guardado en Supabase.");
             throw new Exception("Libro no encontrado en la API de libros. No se puede agregar.");

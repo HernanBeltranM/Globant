@@ -41,21 +41,7 @@ public class LibrosAPIValidator {
                 }
                 in.close();
                 
-                String responseStr = response.toString();
-                
-                // Verificar si hay resultados en la respuesta
-                if (responseStr.contains("\"totalItems\"")) {
-                    // Extraer el valor de totalItems
-                    int startIndex = responseStr.indexOf("\"totalItems\":") + 13;
-                    int endIndex = responseStr.indexOf(",", startIndex);
-                    if (endIndex == -1) {
-                        endIndex = responseStr.indexOf("}", startIndex);
-                    }
-                    String totalItemsStr = responseStr.substring(startIndex, endIndex).trim();
-                    int totalItems = Integer.parseInt(totalItemsStr);
-                    
-                    return totalItems > 0;
-                }
+                return tieneResultados(response.toString());
             }
             
             return false;
@@ -64,6 +50,31 @@ public class LibrosAPIValidator {
             System.err.println("Error al validar libro en API: " + e.getMessage());
             return false;
         }
+    }
+    
+    /**
+     * Verifica si la respuesta JSON contiene resultados
+     * @param jsonResponse Respuesta JSON de la API
+     * @return true si totalItems > 0, false en caso contrario
+     */
+    public static boolean tieneResultados(String jsonResponse) {
+        try {
+            if (jsonResponse.contains("\"totalItems\"")) {
+                // Extraer el valor de totalItems
+                int startIndex = jsonResponse.indexOf("\"totalItems\":") + 13;
+                int endIndex = jsonResponse.indexOf(",", startIndex);
+                if (endIndex == -1) {
+                    endIndex = jsonResponse.indexOf("}", startIndex);
+                }
+                String totalItemsStr = jsonResponse.substring(startIndex, endIndex).trim();
+                int totalItems = Integer.parseInt(totalItemsStr);
+                
+                return totalItems > 0;
+            }
+        } catch (Exception e) {
+            System.err.println("Error al verificar resultados: " + e.getMessage());
+        }
+        return false;
     }
     
     /**
@@ -119,8 +130,18 @@ public class LibrosAPIValidator {
                 
                 // Buscar el cierre de comillas considerando caracteres escapados
                 while (endQuote < jsonResponse.length()) {
-                    if (jsonResponse.charAt(endQuote) == '"' && jsonResponse.charAt(endQuote - 1) != '\\') {
-                        break;
+                    if (jsonResponse.charAt(endQuote) == '"') {
+                        // Verificar si no está escapado (contar backslashes antes de la comilla)
+                        int backslashCount = 0;
+                        int checkPos = endQuote - 1;
+                        while (checkPos >= 0 && jsonResponse.charAt(checkPos) == '\\') {
+                            backslashCount++;
+                            checkPos--;
+                        }
+                        // Si hay un número par de backslashes (o cero), la comilla no está escapada
+                        if (backslashCount % 2 == 0) {
+                            break;
+                        }
                     }
                     endQuote++;
                 }
