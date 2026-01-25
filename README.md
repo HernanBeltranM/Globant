@@ -35,32 +35,38 @@ El sistema valida que los libros existan en una API externa antes de guardarlos 
 
 **Importante:** Solo se guardarán libros que existan en la API de libros. Si el ISBN no se encuentra en la API, el libro NO será guardado en Supabase.
 
-### Auto-completado de Información
+### Dos Formas de Agregar Libros
 
-**¡NUEVO!** Ahora solo necesitas proporcionar el **ISBN** del libro. El sistema automáticamente:
-- Busca el libro en Google Books API
-- Extrae el título y los autores
-- Guarda la información completa en Supabase
+El sistema ofrece **dos opciones** para agregar libros:
 
-### Flujo de Validación y Auto-completado
+#### 1. Auto-completar desde API (Solo ISBN)
+- **Rápido y fácil**: Solo necesitas el ISBN
+- El sistema busca automáticamente en Google Books API
+- Extrae título y autores de forma automática
+- Ideal cuando conoces el ISBN pero no los detalles del libro
 
-1. El usuario solo proporciona el **ISBN**
-2. El sistema consulta la Google Books API con ese ISBN
-3. Si el libro existe (totalItems > 0):
-   - Se extrae automáticamente el título
-   - Se extraen automáticamente los autores
-   - Se guarda en Supabase con toda la información
-4. Si el libro NO existe, se muestra un error y NO se guarda
+#### 2. Entrada Manual (ISBN, Título y Autor)
+- **Control total**: Proporcionas ISBN, título y autor manualmente
+- El sistema valida que el ISBN exista en la API
+- Usa los datos que TÚ proporcionas para guardar en Supabase
+- Ideal cuando quieres usar nombres o títulos específicos
 
-### Ejemplo de Uso
+### Flujo de Uso
 
-**Interfaz de Usuario (Terminal):**
+**Menú de Agregar Libro:**
 ```
-=== GESTIÓN DE LIBROS ===
-1. Listar Libros
-2. Agregar Libro
+=== AGREGAR LIBRO ===
+1. Auto-completar desde API (solo ISBN)
+2. Entrada manual (ISBN, título y autor)
 3. Volver
-Seleccione una opción: 2
+Seleccione una opción: _
+```
+
+### Ejemplos de Uso
+
+**Opción 1: Auto-completar desde API**
+```
+Seleccione una opción: 1
 
 ISBN: 9788420412146
 Buscando libro en Google Books API...
@@ -70,18 +76,36 @@ Buscando libro en Google Books API...
 Libro agregado a Supabase exitosamente.
 ```
 
-**Código programático:**
+**Opción 2: Entrada Manual**
+```
+Seleccione una opción: 2
+
+ISBN: 9788420412146
+Título: Don Quijote
+Autor: Cervantes
+Validando libro en API externa...
+✓ Libro validado correctamente en la API.
+Libro agregado a Supabase exitosamente.
+```
+
+### Código Programático
+
 ```java
 BibliotecaService bibliotecaService = new BibliotecaService();
 
-// Solo necesitas el ISBN - el título y autor se obtienen automáticamente de la API
-Libro libro = new Libro("9788420412146", "", "", "disponible");
-bibliotecaService.agregarLibro(libro); 
-// ✓ Se obtiene: Título: "Don Quijote de la Mancha...", Autor: "Miguel de Cervantes"
+// Opción 1: Auto-completar desde API
+Libro libroAuto = new Libro("9788420412146", "", "", "disponible");
+bibliotecaService.agregarLibroAutoAPI(libroAuto); 
+// ✓ Se obtiene automáticamente: Título y Autor desde la API
 
-// ISBN inválido - NO se guardará en Supabase
+// Opción 2: Entrada Manual
+Libro libroManual = new Libro("9788420412146", "Don Quijote", "Cervantes", "disponible");
+bibliotecaService.agregarLibroManual(libroManual);
+// ✓ Valida ISBN en API, pero usa título y autor proporcionados
+
+// ISBN inválido - NO se guardará en ninguna opción
 Libro libroInvalido = new Libro("000-0-00-000000-0", "", "", "disponible");
-bibliotecaService.agregarLibro(libroInvalido); // ✗ Error: Libro no encontrado en la API
+bibliotecaService.agregarLibroAutoAPI(libroInvalido); // ✗ Error: Libro no encontrado en la API
 ```
 
 ### Ejemplo de API Response
@@ -91,7 +115,7 @@ El sistema utiliza la Google Books API con el siguiente formato:
 https://www.googleapis.com/books/v1/volumes?q=isbn:9788420412146&key=API_KEY
 ```
 
-De la respuesta JSON, el sistema extrae:
+De la respuesta JSON, el sistema extrae (solo en modo auto-completar):
 - `volumeInfo.title` → Título del libro
 - `volumeInfo.authors` → Lista de autores (se concatenan con comas)
 
@@ -175,15 +199,19 @@ Usuario usuario = new Usuario("correo@ejemplo.com", "password123", "usuario");
 usuarioService.registrarUsuario(usuario);
 ```
 
-### Agregar Libro (con auto-completado desde API)
+### Agregar Libro (dos opciones disponibles)
 ```java
 BibliotecaService bibliotecaService = new BibliotecaService();
 
-// ¡NUEVO! Solo necesitas el ISBN, el título y autor se obtienen automáticamente
-Libro libro = new Libro("9788420412146", "", "", "disponible");
-bibliotecaService.agregarLibro(libro); 
+// Opción 1: Auto-completar desde API (solo ISBN)
+Libro libroAuto = new Libro("9788420412146", "", "", "disponible");
+bibliotecaService.agregarLibroAutoAPI(libroAuto); 
 // Sistema consulta API → Obtiene: "Don Quijote de la Mancha..." y "Miguel de Cervantes"
-// Guarda en Supabase con toda la información completa
+
+// Opción 2: Entrada Manual (ISBN, título y autor)
+Libro libroManual = new Libro("9788420412146", "Don Quijote", "Cervantes", "disponible");
+bibliotecaService.agregarLibroManual(libroManual);
+// Sistema valida ISBN → Usa título y autor proporcionados
 ```
 
 ### Crear Préstamo

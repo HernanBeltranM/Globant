@@ -18,7 +18,12 @@ public class BibliotecaService {
                    .replace("\t", "\\t");
     }
     
-    public void agregarLibro(Libro libro) throws Exception {
+    /**
+     * Agrega un libro con auto-completado desde la API (solo requiere ISBN)
+     * @param libro Libro con ISBN, el título y autor se obtienen de la API
+     * @throws Exception si el libro no existe en la API
+     */
+    public void agregarLibroAutoAPI(Libro libro) throws Exception {
         // Validar que el libro exista en la API de libros antes de guardarlo
         System.out.println("Buscando libro en Google Books API...");
         String infoLibro = LibrosAPIValidator.obtenerInfoLibro(libro.getIsbn());
@@ -51,6 +56,36 @@ public class BibliotecaService {
         // Escapar strings para JSON
         String tituloEscapado = escaparJSON(titulo);
         String autorEscapado = escaparJSON(autor);
+        
+        String json = String.format(
+            "{\"isbn\":\"%s\",\"titulo\":\"%s\",\"autor\":\"%s\",\"estado\":\"%s\"}",
+            libro.getIsbn(), tituloEscapado, autorEscapado, libro.getEstado()
+        );
+        String response = SupabaseClient.post(SupabaseConfig.LIBROS_URL, json);
+        System.out.println("Libro agregado a Supabase exitosamente.");
+    }
+    
+    /**
+     * Agrega un libro con entrada manual (ISBN, título y autor proporcionados por el usuario)
+     * @param libro Libro con ISBN, título y autor proporcionados manualmente
+     * @throws Exception si el libro no existe en la API
+     */
+    public void agregarLibroManual(Libro libro) throws Exception {
+        // Validar que el libro exista en la API de libros antes de guardarlo
+        System.out.println("Validando libro en API externa...");
+        boolean existe = LibrosAPIValidator.libroExiste(libro.getIsbn());
+        
+        if (!existe) {
+            System.out.println("ERROR: El libro con ISBN " + libro.getIsbn() + " no existe en la API de libros.");
+            System.out.println("El libro NO será guardado en Supabase.");
+            throw new Exception("Libro no encontrado en la API de libros. No se puede agregar.");
+        }
+        
+        System.out.println("✓ Libro validado correctamente en la API.");
+        
+        // Escapar strings para JSON
+        String tituloEscapado = escaparJSON(libro.getTitulo());
+        String autorEscapado = escaparJSON(libro.getAutor());
         
         String json = String.format(
             "{\"isbn\":\"%s\",\"titulo\":\"%s\",\"autor\":\"%s\",\"estado\":\"%s\"}",
