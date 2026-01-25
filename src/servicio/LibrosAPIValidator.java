@@ -104,4 +104,60 @@ public class LibrosAPIValidator {
             return null;
         }
     }
+    
+    /**
+     * Extrae el título de la respuesta JSON de la API
+     * @param jsonResponse Respuesta JSON de la API
+     * @return El título del libro o "Título no disponible"
+     */
+    public static String extraerTitulo(String jsonResponse) {
+        try {
+            int titleIndex = jsonResponse.indexOf("\"title\":");
+            if (titleIndex != -1) {
+                int startQuote = jsonResponse.indexOf("\"", titleIndex + 8);
+                int endQuote = jsonResponse.indexOf("\"", startQuote + 1);
+                return jsonResponse.substring(startQuote + 1, endQuote);
+            }
+        } catch (Exception e) {
+            System.err.println("Error al extraer título: " + e.getMessage());
+        }
+        return "Título no disponible";
+    }
+    
+    /**
+     * Extrae los autores de la respuesta JSON de la API
+     * @param jsonResponse Respuesta JSON de la API
+     * @return Los autores del libro separados por coma, o "Autor no disponible"
+     */
+    public static String extraerAutores(String jsonResponse) {
+        try {
+            int authorsIndex = jsonResponse.indexOf("\"authors\":");
+            if (authorsIndex != -1) {
+                int startBracket = jsonResponse.indexOf("[", authorsIndex);
+                int endBracket = jsonResponse.indexOf("]", startBracket);
+                String authorsArray = jsonResponse.substring(startBracket + 1, endBracket);
+                
+                // Extraer todos los autores del array
+                StringBuilder autores = new StringBuilder();
+                int currentPos = 0;
+                while (true) {
+                    int startQuote = authorsArray.indexOf("\"", currentPos);
+                    if (startQuote == -1) break;
+                    int endQuote = authorsArray.indexOf("\"", startQuote + 1);
+                    if (endQuote == -1) break;
+                    
+                    if (autores.length() > 0) {
+                        autores.append(", ");
+                    }
+                    autores.append(authorsArray.substring(startQuote + 1, endQuote));
+                    currentPos = endQuote + 1;
+                }
+                
+                return autores.length() > 0 ? autores.toString() : "Autor no disponible";
+            }
+        } catch (Exception e) {
+            System.err.println("Error al extraer autores: " + e.getMessage());
+        }
+        return "Autor no disponible";
+    }
 }
