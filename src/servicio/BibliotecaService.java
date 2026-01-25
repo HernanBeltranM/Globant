@@ -4,6 +4,20 @@ import modelo.Libro;
 
 public class BibliotecaService {
     
+    /**
+     * Escapa caracteres especiales para JSON
+     * @param text Texto a escapar
+     * @return Texto escapado para JSON
+     */
+    private String escaparJSON(String text) {
+        if (text == null) return "";
+        return text.replace("\\", "\\\\")
+                   .replace("\"", "\\\"")
+                   .replace("\n", "\\n")
+                   .replace("\r", "\\r")
+                   .replace("\t", "\\t");
+    }
+    
     public void agregarLibro(Libro libro) throws Exception {
         // Validar que el libro exista en la API de libros antes de guardarlo
         System.out.println("Buscando libro en Google Books API...");
@@ -27,9 +41,13 @@ public class BibliotecaService {
         System.out.println("  - Título: " + titulo);
         System.out.println("  - Autor(es): " + autor);
         
+        // Escapar strings para JSON
+        String tituloEscapado = escaparJSON(titulo);
+        String autorEscapado = escaparJSON(autor);
+        
         String json = String.format(
             "{\"isbn\":\"%s\",\"titulo\":\"%s\",\"autor\":\"%s\",\"estado\":\"%s\"}",
-            libro.getIsbn(), titulo, autor, libro.getEstado()
+            libro.getIsbn(), tituloEscapado, autorEscapado, libro.getEstado()
         );
         String response = SupabaseClient.post(SupabaseConfig.LIBROS_URL, json);
         System.out.println("Libro agregado a Supabase exitosamente.");

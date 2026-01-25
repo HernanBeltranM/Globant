@@ -115,8 +115,20 @@ public class LibrosAPIValidator {
             int titleIndex = jsonResponse.indexOf("\"title\":");
             if (titleIndex != -1) {
                 int startQuote = jsonResponse.indexOf("\"", titleIndex + 8);
-                int endQuote = jsonResponse.indexOf("\"", startQuote + 1);
-                return jsonResponse.substring(startQuote + 1, endQuote);
+                int endQuote = startQuote + 1;
+                
+                // Buscar el cierre de comillas considerando caracteres escapados
+                while (endQuote < jsonResponse.length()) {
+                    if (jsonResponse.charAt(endQuote) == '"' && jsonResponse.charAt(endQuote - 1) != '\\') {
+                        break;
+                    }
+                    endQuote++;
+                }
+                
+                String titulo = jsonResponse.substring(startQuote + 1, endQuote);
+                // Limpiar el título de comillas dobles internas para Supabase
+                titulo = titulo.replace("\\\"", "\"").replace("\"", "'");
+                return titulo;
             }
         } catch (Exception e) {
             System.err.println("Error al extraer título: " + e.getMessage());
