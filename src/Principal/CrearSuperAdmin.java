@@ -15,9 +15,9 @@ public class CrearSuperAdmin {
             // Role: superadmin
             
             usuarioService.registrarUsuarioConHash(
-                "beltranmunozh@gmail.comm",
+                "beltranmunozh@gmail.com",
                 "Hernan2007*",
-                "super_admin"
+                "superadmin"
             );
             
             System.out.println("\n¡SuperAdmin creado exitosamente!");
