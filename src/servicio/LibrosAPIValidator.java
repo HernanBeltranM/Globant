@@ -162,7 +162,7 @@ public class LibrosAPIValidator {
      * @param jsonResponse Respuesta JSON de la API
      * @return Los autores del libro separados por coma, o "Autor no disponible"
      */
-    public static String extraerAutores(String jsonResponse) {
+    public static String extraerAutores(String jsonResponse) {//explicar este punto la siguiente reunion
         try {
             int authorsIndex = jsonResponse.indexOf("\"authors\":");
             if (authorsIndex != -1) {
