@@ -9,6 +9,9 @@ import java.nio.charset.StandardCharsets;
 
 public class SupabaseClient {
     
+    // DEBUG flag - set to false in production to avoid logging sensitive data
+    private static final boolean DEBUG_MODE = true;
+    
     public static String get(String urlString) throws Exception {
         URL url = new URL(urlString);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -33,8 +36,11 @@ public class SupabaseClient {
     }
     
     public static String post(String urlString, String jsonBody) throws Exception {
-        System.out.println("DEBUG - POST URL: " + urlString);
-        System.out.println("DEBUG - Request Body: " + jsonBody);
+        // WARNING: Debug logging may expose sensitive data - only for development
+        if (DEBUG_MODE) {
+            System.out.println("DEBUG - POST URL: " + urlString);
+            System.out.println("DEBUG - Request Body: " + jsonBody);
+        }
         
         URL url = new URL(urlString);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -65,8 +71,10 @@ public class SupabaseClient {
         }
         in.close();
         
-        System.out.println("DEBUG - Response Code: " + responseCode);
-        System.out.println("DEBUG - Response Body: " + response.toString());
+        if (DEBUG_MODE) {
+            System.out.println("DEBUG - Response Code: " + responseCode);
+            System.out.println("DEBUG - Response Body: " + response.toString());
+        }
         
         if (responseCode < 200 || responseCode >= 300) {
             throw new Exception("POST request failed. Response Code: " + responseCode + ", Body: " + response.toString());
