@@ -33,6 +33,9 @@ public class SupabaseClient {
     }
     
     public static String post(String urlString, String jsonBody) throws Exception {
+        System.out.println("DEBUG - POST URL: " + urlString);
+        System.out.println("DEBUG - Request Body: " + jsonBody);
+        
         URL url = new URL(urlString);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
@@ -61,6 +64,9 @@ public class SupabaseClient {
             response.append(inputLine);
         }
         in.close();
+        
+        System.out.println("DEBUG - Response Code: " + responseCode);
+        System.out.println("DEBUG - Response Body: " + response.toString());
         
         if (responseCode < 200 || responseCode >= 300) {
             throw new Exception("POST request failed. Response Code: " + responseCode + ", Body: " + response.toString());

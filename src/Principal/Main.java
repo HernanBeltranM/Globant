@@ -141,8 +141,8 @@ public class Main {
         String contrasena = scanner.nextLine();
         
         System.out.println("\nRoles disponibles:");
-        if (usuarioActual.getRol().equalsIgnoreCase("superadmin")) {
-            System.out.println("- superadmin");
+        if (usuarioActual.getRol().equalsIgnoreCase("super_admin")) {
+            System.out.println("- super_admin");
             System.out.println("- admin");
             System.out.println("- normal");
         } else if (usuarioActual.getRol().equalsIgnoreCase("admin")) {
