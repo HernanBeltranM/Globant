@@ -14,7 +14,7 @@ java -cp out Principal.CrearSuperAdmin
 Este script creará el usuario superadmin con las siguientes credenciales **TEMPORALES**:
 - **Correo**: beltranmunozh@gmail.com
 - **Contraseña**: Hernan2007* (CAMBIAR INMEDIATAMENTE)
-- **Rol**: superadmin
+- **Rol**: super_admin
 
 **IMPORTANTE**: 
 - Asegúrese de tener configuradas las variables de entorno de Supabase antes de ejecutar este script.
@@ -35,14 +35,14 @@ java -cp out Principal.Main
 El sistema implementa tres niveles de roles con diferentes permisos:
 
 ### SuperAdmin
-- **Puede crear**: superadmin, admin, y usuarios normales
+- **Puede crear**: super_admin, admin, y usuarios normales
 - **Acceso completo** a todas las funcionalidades del sistema
 
 ### Admin
-- **Puede crear**: solo usuarios normales
+- **Puede crear**: solo usuarios normales (rol: usuario)
 - Acceso a gestión de libros y préstamos
 
-### Normal
+### Usuario
 - **No puede crear** usuarios
 - Acceso a gestión de libros y préstamos
 
