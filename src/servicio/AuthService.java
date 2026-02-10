@@ -83,7 +83,7 @@ public class AuthService {
         }
         
         switch (creatorRole.toLowerCase()) {
-            case "superadmin":
+            case "super_admin":
                 // Superadmin can create anyone
                 return true;
             case "admin":

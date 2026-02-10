@@ -12,18 +12,18 @@ public class CrearSuperAdmin {
             // Create the superadmin user with hashed password
             // Email: beltranmunozh@gmail.com
             // Password: Hernan2007*
-            // Role: superadmin
+            // Role: super_admin
             
             usuarioService.registrarUsuarioConHash(
                 "beltranmunozh@gmail.com",
                 "Hernan2007*",
-                "superadmin"
+                "super_admin"
             );
             
             System.out.println("\n¡SuperAdmin creado exitosamente!");
             System.out.println("Correo: beltranmunozh@gmail.com");
             System.out.println("Contraseña: Hernan2007*");
-            System.out.println("Rol: superadmin");
+            System.out.println("Rol: super_admin");
             
         } catch (Exception e) {
             System.err.println("Error al crear superadmin: " + e.getMessage());
