@@ -144,9 +144,9 @@ public class Main {
         if (usuarioActual.getRol().equalsIgnoreCase("super_admin")) {
             System.out.println("- super_admin");
             System.out.println("- admin");
-            System.out.println("- normal");
+            System.out.println("- usuario");
         } else if (usuarioActual.getRol().equalsIgnoreCase("admin")) {
-            System.out.println("- normal");
+            System.out.println("- usuario");
         } else {
             System.out.println("No tienes permisos para crear usuarios.");
             return;

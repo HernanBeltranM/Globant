@@ -88,8 +88,8 @@ public class AuthService {
                 return true;
             case "admin":
                 // Admin can only create normal users
-                return newUserRole.toLowerCase().equals("normal");
-            case "normal":
+                return newUserRole.toLowerCase().equals("usuario");
+            case "usuario":
                 // Normal users cannot create other users
                 return false;
             default:
