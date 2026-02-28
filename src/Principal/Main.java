@@ -9,6 +9,7 @@ import servicio.PrestamoService;
 import servicio.AuthService;
 
 import java.util.Scanner;
+//ho
 
 public class Main {
     
@@ -19,6 +20,19 @@ public class Main {
     private static PrestamoService prestamoService = new PrestamoService();
     private static Usuario usuarioActual = null;
     
+
+
+
+
+
+
+
+
+
+
+
+
+    /* holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa */
     public static void main(String[] args) {
         System.out.println("=== Sistema de Biblioteca con Supabase ===\n");
         
