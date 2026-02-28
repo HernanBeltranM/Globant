@@ -6,7 +6,7 @@ public class Usuario {
     private String contrasena;
     private String oath;
     private String rol;
-    // holllllllllllllllaaaaaaaaaaaaaaaa
+    // holllllllllllllllaaaaaaaaaaaaaaaakkkk
     public Usuario() {
     }
     
