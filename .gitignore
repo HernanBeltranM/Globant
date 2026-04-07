@@ -25,6 +25,9 @@ bin/
 
 ### VS Code ###
 .vscode/
+.env
+.env.*
+!.env.example
 
 ### Mac OS ###
 .DS_Store

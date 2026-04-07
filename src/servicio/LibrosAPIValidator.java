@@ -11,7 +11,7 @@ public class LibrosAPIValidator {
     
     // Google Books API para validar libros por ISBN
     private static final String GOOGLE_BOOKS_API = "https://www.googleapis.com/books/v1/volumes?q=isbn:";
-    private static final String API_KEY = "AIzaSyCcW8aoNU4ikuYUtq7_wyc3HGIpbFnCs8M";
+    private static final String API_KEY = getRequiredEnv("API_KEY_LIBROS");
     
     /**
      * Valida si un libro existe en la API de Google Books usando su ISBN
@@ -192,5 +192,16 @@ public class LibrosAPIValidator {
             System.err.println("Error al extraer autores: " + e.getMessage());
         }
         return "Autor no disponible";
+    }
+
+    private static String getRequiredEnv(String name) {
+        String value = System.getenv(name);
+        if (value == null || value.trim().isEmpty()) {
+            throw new IllegalStateException(
+                "Falta variable de entorno requerida: " + name +
+                ". Configurala en 1Password (entorno PROLLECLIBROS) antes de ejecutar la app."
+            );
+        }
+        return value.trim();
     }
 }

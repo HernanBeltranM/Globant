@@ -6,6 +6,37 @@ Este proyecto integra un sistema de biblioteca Java con Supabase como backend.
 
 Este proyecto está desarrollado en **IntelliJ IDEA**.
 
+## Variables de Entorno y 1Password
+
+Desde ahora, el proyecto **no** usa claves hardcodeadas. Requiere estas variables de entorno:
+
+- `API_KEY_LIBROS`
+- `URL_BASE_DE_DATOS`
+- `API_KEY_BASE_DE_DATOS`
+
+### Enlazar con 1Password (entorno `PROLLECLIBROS`)
+
+1. Instala y configura 1Password CLI (`op`) e inicia sesión.
+2. Crea un archivo `.env` local (no se sube al repo) basado en `.env.example`.
+3. En ese `.env`, apunta cada valor al secreto de 1Password usando referencias `op://`.
+4. Ejecuta la app con `op run` para inyectar variables al proceso Java.
+
+Ejemplo de ejecución en PowerShell:
+
+```powershell
+op run --env-file .env -- java -cp out Principal.Main
+```
+
+Tambien puedes usar el script incluido:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\run-with-1password.ps1 -Compile
+```
+
+Si ya compilaste antes, puedes omitir `-Compile`.
+
+Si ejecutas desde IntelliJ, en lugar de correr directamente la clase, inicia IntelliJ desde una terminal donde hayas hecho `op run`, o define esas variables en la configuración de ejecución.
+
 ### Cómo ejecutar el proyecto en IntelliJ:
 
 1. **Abrir el proyecto:**
@@ -232,11 +263,11 @@ prestamoService.aprobarPrestamo(2L, "2024-01-10T10:00:00Z", null);
 
 ## API Endpoints
 
-Los servicios se conectan a los siguientes endpoints de Supabase:
-- Usuarios: `https://sgmjnvhnxjlmbkzrenfg.supabase.co/rest/v1/usuarios`
-- Libros: `https://sgmjnvhnxjlmbkzrenfg.supabase.co/rest/v1/libros`
-- Préstamos: `https://sgmjnvhnxjlmbkzrenfg.supabase.co/rest/v1/prestamos`
-- Adquisiciones: `https://sgmjnvhnxjlmbkzrenfg.supabase.co/rest/v1/adquisiciones`
+Los servicios construyen los endpoints a partir de `URL_BASE_DE_DATOS`:
+- Usuarios: `${URL_BASE_DE_DATOS}/usuarios`
+- Libros: `${URL_BASE_DE_DATOS}/libros`
+- Préstamos: `${URL_BASE_DE_DATOS}/prestamos`
+- Adquisiciones: `${URL_BASE_DE_DATOS}/adquisiciones`
 
 ## Notas Importantes
 
